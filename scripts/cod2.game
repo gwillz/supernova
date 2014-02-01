@@ -1,0 +1,15 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/cod2.edit
+
+#if [ ! $2 ]; then
+#  exit 1
+#fi
+
+cd $COD2
+screen -dmS cod2-$2 $COD2/init.sh $1 $2
+
+echo $1 > $IPDIR/cod2-$2.ip
+exit 0

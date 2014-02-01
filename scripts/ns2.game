@@ -1,0 +1,16 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/ns2.edit
+
+cd $NS2
+if ! netstat -ln | grep -q ":5902"; then
+	vncserver :2 &> /dev/null
+fi
+
+export DISPLAY=supernova:2
+screen -dmS ns2 wine $NS2/Server.exe -name "SuperNova NS2" -map ns2_tram -limit 16 -ip $1 -config_path $NS2/config -lan false -password "mamakuysbooty" -console -webadmin -webdomain "$1" -webport "8888"
+
+echo $1 > $IPDIR/ns2.ip
+exit 0

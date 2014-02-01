@@ -1,0 +1,13 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/tekkit.edit
+
+sedReplace "server-ip.*" "server-ip=$1" "$TEKKIT/server.properties"
+
+cd $TEKKIT
+screen -dmS tekkit java -Xmx2G -Xms1G -jar $TEKKIT/Tekkit.jar nogui
+
+echo $1 > $IPDIR/tekkit.ip
+exit 0

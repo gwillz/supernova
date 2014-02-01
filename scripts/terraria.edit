@@ -1,0 +1,8 @@
+#!/bin/bash
+# terraria edit script
+
+TERRARIA=$GAMEDIR/terraria
+PORT=7777
+MULTI=false
+NAMES=(server init)
+FILES=($TERRARIA/server.properties $TERRARIA/init.sh)

@@ -1,0 +1,13 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/hungergames.edit
+
+sedReplace "server-ip.*" "server-ip=$1" "$HUNGERGAMES/server.properties"
+
+cd $HUNGERGAMES
+screen -dmS hungergames java -Xmx2G -Xms1G -jar $HUNGERGAMES/minecraft_server.jar nogui
+
+echo $1 > $IPDIR/hungergames.ip
+exit 0

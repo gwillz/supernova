@@ -1,0 +1,8 @@
+#!/bin/bash
+# battlefield2 edit script
+
+BF2=$GAMEDIR/bf2
+PORT=16567
+MUTLI=false
+NAMES=(settings maplist)
+FILES=($BF2/mods/bf2/settings/serversettings.con $BF2/mods/bf2/settings/maplist.con)

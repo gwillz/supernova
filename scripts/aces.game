@@ -1,0 +1,13 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/aces.edit
+
+#sedReplace "server-ip.*" "server-ip=$1" "$MINECRAFT/server.properties"
+
+cd $ACES
+screen -dmS aces sh $ACES/run_server.sh
+
+echo $1 > $IPDIR/aces.ip
+exit 0

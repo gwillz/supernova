@@ -1,0 +1,9 @@
+#!/bin/bash
+# minecraft edit script
+
+CALAMITY=$GAMEDIR/calamity
+PORT=25565
+MULTI=false
+NAMES=(server ops bans)
+FILES=($CALAMITY/server.properties $CALAMITY/ops.txt $CALAMITY/banned-players.txt)
+UPDATE="$CALAMITY/update.sh"

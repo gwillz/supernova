@@ -1,0 +1,14 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/hl2dm.edit
+
+if [ ! $2 ]; then
+  exit 1
+fi
+
+screen -dmS hl2dm-$2 $HL2DM/srcds_run -console -game hl2mp -nohltv +map dm_overwatch +hostname "SuperNova HL2:DM #$2" +ip $1 +sv_lan 0 +maxplayers 16 +
+
+echo $1 > $IPDIR/hl2dm-$2.ip
+exit 0

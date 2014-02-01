@@ -1,0 +1,11 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/killingfloor.edit
+
+cd $KILLINGFLOOR/system
+screen -dmS killingfloor-$2 $KILLINGFLOOR/system/ucc-bin server KF-Bedlam.rom?game=KFmod.KFGameType?VACSecured=true?MaxPlayers=6?multihome=$1
+
+echo $1 > $IPDIR/killingfloor-$2.ip
+exit 0

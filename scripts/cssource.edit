@@ -1,0 +1,9 @@
+#!/bin/bash
+# countestrike:source edit script
+
+CSS=$GAMEDIR/cs-s
+PORT=27015
+MULTI=true
+NAMES=(server mapcycle motd)
+FILES=($CSS/cstrike/cfg/server.cfg $CSS/cstrike/cfg/mapcycle.txt $CSS/cstrike/cfg/motd_text.txt)
+UPDATE="$GAMEDIR/steam/update.sh $GAMEDIR/steam/cssource.txt"

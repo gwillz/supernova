@@ -1,0 +1,13 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/bukkit.edit
+
+sedReplace "server-ip.*" "server-ip=$1" "$BUKKIT/server.properties"
+
+cd $BUKKIT
+screen -dmS bukkit java -Xmx2G -Xms1G -jar $BUKKIT/craftbukkit-dev.jar nogui
+
+echo $1 > $IPDIR/bukkit.ip
+exit 0

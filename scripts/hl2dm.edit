@@ -1,0 +1,9 @@
+#!/bin/bash
+# hl2:dm edit script
+
+HL2DM=$GAMEDIR/hl2dm
+PORT=27015
+MULTI=true
+NAMES=(server mapcycle motd)
+FILES=($HL2DM/hl2mp/cfg/server.cfg $HL2DM/hl2mp/cfg/mapcycle.txt $HL2DM/hl2mp/cfg/motd_text.txt)
+UPDATE="$GAMEDIR/steam/update.sh $GAMEDIR/steam/hl2dm.txt"

@@ -1,0 +1,5 @@
+# Wolfenstein-coop edit file
+
+WOLFCOOP=$GAMEDIR/Wolfenstein-coop
+PORTS=
+MULTI=false

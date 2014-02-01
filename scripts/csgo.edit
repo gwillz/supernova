@@ -1,0 +1,9 @@
+#!/bin/bash
+# countestrike:global offensive edit file
+
+CSGO=$GAMEDIR/csgo
+PORT=27015
+MULTI=true
+NAMES=(server mapcycle gamemodes)
+FILES=($CSGO/csgo/cfg/server.cfg $CSGO/csgo/mapcycle.txt $CSGO/csgo/gamemodes_server.txt)
+UPDATE="$GAMEDIR/steam/update.sh $GAMEDIR/steam/csgo.txt"

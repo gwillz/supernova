@@ -1,0 +1,13 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/minecraft.edit
+
+sedReplace "server-ip.*" "server-ip=$1" "$MINECRAFT/server.properties"
+
+cd $MINECRAFT
+screen -dmS minecraft java -Xmx2G -Xms1G -jar $MINECRAFT/minecraft_server.jar nogui
+
+echo $1 > $IPDIR/minecraft.ip
+exit 0

@@ -1,0 +1,11 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/halo.edit
+
+cd $HALO
+screen -dmS halo wine $HALO/haloded.exe
+
+echo $1 > $IPDIR/halo.ip
+exit 0

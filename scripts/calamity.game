@@ -1,0 +1,13 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/calamity.edit
+
+sedReplace "server-ip.*" "server-ip=$1" "$CALAMITY/server.properties"
+
+cd $CALAMITY
+screen -dmS calamity java -Xmx2G -Xms1G -jar $CALAMITY/minecraft_server.jar nogui
+
+echo $1 > $IPDIR/calamity.ip
+exit 0

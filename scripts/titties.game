@@ -1,0 +1,11 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/titties.edit
+
+cd $GMOD
+screen -dmS titties-$2 $GMOD/srcds_run -game garrysmod -console +gamemode terrortown +mapcyclefile $GMOD/ttt_maps.txt +sv_alltalk 0 +sv_scriptenforcer 1 +maxplayers 16 +ip $1 +sv_lan 0 -nomaster +map ttt_town_b1 +hostname "SuperNova TTT!" #+servercfgfile $GMOD/ttt_server.cfg 
+
+echo $1 > $IPDIR/titties-$2.ip
+exit 0

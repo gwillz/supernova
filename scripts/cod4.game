@@ -1,0 +1,15 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/cod4.edit
+
+#if [ ! $2 ]; then
+#  exit 1
+#fi
+
+cd $COD4
+screen -dmS cod4-$2 ./cod4_lnxded +set dedicated 1 +set g_gametype dm +exec server.cfg +map_rotate +set sv_punkbuster 0 +set net_ip $1
+
+echo $1 > $IPDIR/cod4-$2.ip
+exit 0

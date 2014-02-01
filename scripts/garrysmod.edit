@@ -1,0 +1,9 @@
+#!/bin/bash
+# garrysmod - trouble in terrorist town edit script
+
+GMOD=$GAMEDIR/garrysmod
+PORT=27015
+MULTI=true
+NAMES=(server mapcycle gamemodes mount)
+FILES=($GMOD/garrysmod/cfg/server.cfg $GMOD/garrysmod/mapcycle.txt $GMOD/garrysmod/gamemodes_server.txt $GMOD/garrysmod/cfg/mount.cfg)
+UPDATE="$GAMEDIR/steam/update.sh $GAMEDIR/steam/garrysmod.txt"

@@ -1,0 +1,11 @@
+#!/bin/bash
+# WolfenStein Co-op init file
+
+. $HOME/.control
+. $SCRIPTDIR/wolfcoop.edit
+
+cd $WOLFCOOP
+screen -dmS wolfcoop $WOLFCOOP/start.sh
+
+echo $1 > $IPDIR/wolfcoop.ip
+exit 0

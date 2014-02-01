@@ -1,0 +1,7 @@
+#!/bin/bash
+# killingfloor edit script
+
+KILLINGFLOOR=$GAMEDIR/srcds_1/killingfloor
+PORT=7707
+MULTI=true
+UPDATE="$KILLINGFLOOR/../steam -command update -game killingfloor -dir $KILLINGFLOOR/../ -verify"

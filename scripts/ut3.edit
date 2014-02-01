@@ -1,0 +1,8 @@
+#!/bin/bash
+# teamfotress2 edit script
+
+UT3=$GAMEDIR/ut3
+PORT=7777
+MULTI=false
+NAMES=(config)
+FILES=($UT3/UTGame/Config/DefaultGame.ini)

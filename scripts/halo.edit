@@ -1,0 +1,8 @@
+#!/bin/bash
+# halo edit script
+
+HALO=$GAMEDIR/HaloPC_DS
+PORT=2302
+MULTI=false
+NAMES=(init mapcycle)
+FILES=($HALO/init.txt $HALO/mapcycle.txt)

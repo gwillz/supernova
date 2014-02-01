@@ -1,0 +1,11 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/terraria.edit
+
+cd $TERRARIA
+screen -dmS terraria mono $TERRARIA/TerrariaServer.exe -ip $1 -port 7777 -maxplayers 16 -world $TERRARIA/Terraria/Worlds/Dec2013.wld
+
+echo $1 > $IPDIR/terraria.ip
+exit 0

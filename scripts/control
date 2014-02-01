@@ -1,0 +1,701 @@
+#!/bin/bash
+##                  Supernova server control
+##                     By Gwilyn Saunders
+##                          v4.13.83
+##                        Dec 12th 2013
+##
+##
+## TODO: think of a better program name
+## TODO: create something that generates a new server
+## TODO: create bash doco/strip tool
+## TODO: modify all actions to comply with stop's multi-instance technique
+
+
+# common variables
+VARFILE=.control
+USER=`whoami`
+HOME=`cat /etc/passwd | grep $USER | cut -d":" -f6`
+ROOT=$0
+GLOBALUSAGE="usage: $ROOT {connect|create|stop|list|edit|update|readme|run|halt|ip|version|help}"
+
+# common routines
+editfile_check() {
+	#usage: $1 = file path
+	. $SCRIPTDIR/$1.edit
+	if ! [ $PORT ] || ! [ $MULTI ] || ! [ $NAMES ] || ! [ $FILES ]; then
+		echo -e $WHITE"$ROOT:"$RED" $1 edit file is broken."
+		quit 1
+	fi
+}
+
+server_running() {
+	#usage: $1 = server name
+	ls -1 $SCREENDIR | grep -q $1
+	return $?
+}
+
+server_installed() {
+	#usage: $1 = server name
+	[ -f $SCRIPTDIR/$1.game ] && [ -f $SCRIPTDIR/$1.edit ]
+	return $?
+}
+
+ipport_in_use() {
+	#usage: $1 = IP address
+	#		$2 = Port number
+	netstat -ln | grep -q "$1:$2"
+	return $?
+}
+
+write_last_server() {
+	#usage: $1 = last server
+	if [ $1 != $LAST_SERVER ]; then
+		sed "s/LAST_SERVER.*/LAST_SERVER=$1/g" $HOME/$VARFILE > $HOME/.cnew
+		mv $HOME/.cnew $HOME/$VARFILE
+		return $?
+	fi
+	return 0
+}
+
+next_server_id() {
+	#usage: $1 = server name
+	echo $((`ls -1 $SCREENDIR | grep $1 | wc -l` + 1))
+}
+
+last_server() {
+	if [ $2 ]; then
+		$1 $2 $3
+	else
+		$1 $LAST_SERVER
+	fi
+}
+
+generic_error() {
+	#usage: $1 = action name
+	#		$2 = server name
+	
+	if server_installed $2; then
+		echo -e $WHITE"$1:"$CYAN" $2 server not running."
+		quit 1
+	else
+		echo -e $WHITE"$1:"$CYAN" $2 is not an installed server."
+		quit 1
+	fi
+	
+	echo -e $WHITE"$ROOT:"$RED" $VARFILE is broken."
+	quit 1
+}
+
+quit() {
+	echo -e $DEF
+	exit $1
+}
+
+# action routines
+server_connect() {
+	#usage: $1 = server name
+	if server_running $1; then
+		write_last_server $1
+		screen -x $1 &> /dev/null
+		if [ $? != 0 ]; then
+			echo -e $WHITE"connect:"$CYAN" $1 server not running."
+			quit 1
+		fi
+	else 
+		generic_error "connect" $1
+	fi
+}
+
+server_create() {
+	#usage: $1 = server name
+	#		$2 = IP address (optional)
+	
+	sub_create() {
+		#usage: $1 = server name
+		#		$2 = IP address (not optional)
+		
+		if $MULTI; then
+			instance=`next_server_id $1`
+			$SCRIPTDIR/$1.game $2 $instance
+		else
+			if ! server_running $1; then
+				$SCRIPTDIR/$1.game $2
+			else
+				echo -e $WHITE"create:"$CYAN" $1 server already running."
+				quit 1
+			fi
+		fi
+		sleep 1.5
+		if server_running $1; then
+			echo -e $WHITE"create:"$GREEN" $1 server started on $2."$DEF
+			echo -e " Remember to disconnect with Ctrl-A, then D"
+			echo -e " not with Ctrl-C or you'll kill the server!"
+			quit 0 #break loop 
+		else
+			echo -e $WHITE"create:"$CYAN" $1 server failed."
+			quit 1
+		fi
+	}
+	
+	if server_installed $1; then
+		IPS=(`ip addr | grep $INTERFACE | grep -o "inet [0-9]*.[0-9]*.[0-9]*.[0-9]*" | cut -d" " -f2`)
+		write_last_server $1
+		editfile_check $1
+		. $SCRIPTDIR/$1.edit
+		if [ $2 ]; then
+			if echo ${IPS[@]} | grep -q $2; then
+				if ! ipport_in_use $2 $PORT; then
+					sub_create $1 $2
+				else
+					echo -e $WHITE"create:"$CYAN" $2 currently in use."
+					quit 1
+				fi
+			else
+				echo -e $WHITE"create:"$CYAN" $2 doesn't exist on $INTERFACE."
+				quit 1
+			fi
+		else
+			for ip in ${IPS[@]}; do
+				if ! ipport_in_use $ip $PORT ; then
+					sub_create $1 $ip
+				fi
+			done
+			echo -e $WHITE"create:"$CYAN" IPs exhausted."
+			echo " Create more with \"ip create\""
+			quit 1
+		fi
+	else 
+		generic_error "create" $1
+	fi
+}
+
+server_list() {
+	echo -e $WHITE"Available Servers"
+	echo -e "-------------------"$DEF
+	ls $SCRIPTDIR | grep "\\.game" | cut -d"." -f1
+	echo ""
+	echo -e $WHITE"Running Servers"
+	echo -e "-----------------"$DEF
+	if [ -a $SCREENDIR ]; then
+		RUNNING=(`ls -1 $SCREENDIR | cut -d"." -f2`)
+		for r in ${RUNNING[@]}; do
+			if [ -a $IPDIR/$r.ip ]; then
+				ip=`cat $IPDIR/$r.ip` 
+				echo -e "$r: "$GREEN"$ip"$DEF
+			fi
+		done
+	else
+		echo -e $CYAN"No servers running."
+	fi
+}
+
+server_halt() {
+	echo "This method is brutal, data could be lost."
+	echo -e $YELLOW"Are you sure?"
+	while true; do
+		echo -ne $WHITE"(yes/no) "$DEF
+		read yesno
+		case "$yesno" in
+			yes)
+				killall screen
+				if [ $? == 0 ]; then
+					echo -e $WHITE"halt:"$GREEN" success."
+					quit 0
+				else
+					echo -e $WHITE"halt:"$RED" internal error."
+					quit 1
+				fi
+			;;
+			no)
+				echo -e $WHITE"halt:"$CYAN" command cancelled."
+				quit 1
+			;;
+			*)
+				echo -e $WHITE"input:"$DEF" yes or no"
+		esac
+	done
+}
+
+server_edit() {
+	#usage: $1 = server name
+	#		$2 = 'path'-bool (optional)
+	
+	sub_edit() {
+		#usage: $1 = file path
+		#		$2 = 'path'-bool (optional)
+		
+		if [ $2 ] && [ $2 == "path" ]; then
+			echo $1
+		else
+			$EDITOR $1
+		fi
+	}
+	
+	if [ $1 ]; then
+		if [ "$1" == "global" ]; then
+			$EDITOR $HOME/$VARFILE
+			quit 0
+		fi
+		if server_installed $1; then
+			write_last_server $1
+			editfile_check $1
+			. $SCRIPTDIR/$1.edit
+			if [ $2 ]; then
+				case "$2" in
+					list)
+						echo -e $WHITE"edit:"$DEF" $1 edit {${NAMES[@]}}"
+						quit 0
+					;;
+					game)
+						sub_edit $SCRIPTDIR/$1.game $3
+					;;
+					edit)
+						sub_edit $SCRIPTDIR/$1.game $3
+					;;
+					*)
+						i=0
+						for d in ${NAMES[@]}; do
+							if [ "$d" == "$2" ]; then
+								sub_edit ${FILES[$i]} $3
+								quit 0 #break loop
+							fi
+							i=$(($i+1))
+						done
+						echo -e $WHITE"usage:"$DEF" $ROOT edit $1 {<file>|list}"
+						quit 1
+				esac
+			else
+				echo -e $WHITE"edit:"$DEF" $1 edit {${NAMES[@]}}"
+				quit 0 #same as 'edit list'
+			fi
+		else
+			echo -e $WHITE"edit:"$CYAN" $1 is not an installed server."
+			quit 1
+		fi
+	else
+		echo -e $WHITE"usage:"$DEF" $ROOT edit <server name>|<global> {<file>|list}"
+		quit 1
+	fi
+}
+
+server_readme() {
+	#usage: $1 = server name
+	
+	if server_installed $1; then
+		write_last_server $1
+		if [ -f $SCRIPTDIR/$1.readme ]; then
+			cat $SCRIPTDIR/$1.readme | less
+		else
+			echo -e $WHITE"readme:"$CYAN" $1 has no readme file."
+			quit 1
+		fi
+	else 
+		generic_error "readme" $1
+	fi
+}
+
+server_update() {
+	#usage: $1 = server name
+	
+	if server_installed $1; then
+		write_last_server $1
+		if ! server_running $1; then
+			editfile_check $1
+			. $SCRIPTDIR/$1.edit
+			if [ "$UPDATE" ]; then
+				$UPDATE
+				if [ $? != 0 ]; then
+					echo -e $WHITE"update:"$CYAN" error occurred in update script."
+					echo -e $WHITE"  file:"$RED" $UPDATE"
+					quit 1
+				fi
+			else
+				echo -e $WHITE"update:"$CYAN" $1 has no command for updating."
+				quit 1
+			fi
+		else
+			echo -e $WHITE"update:"$CYAN" $1 has a server running."
+			quit 1
+		fi
+	else 
+		generic_error "update" $1
+	fi
+}
+
+server_stop() {
+	#usage: $1 = server name
+	#		$2 = instance num (optional)
+	#		$3 = 'force'-bool (optional)
+	
+	#determine force tag and server+instance combo
+	if [ $2 ]; then
+		if [ "$2" == "force" ]; then
+			force=true
+			server="$1"
+		else
+			if [ $3 ] && [ "$3" == "force" ]; then
+				force=true
+				server="$1-$2"
+			else
+				force=false
+				server="$1-$2"
+			fi
+		fi
+	else
+		force=false
+		server="$1"
+	fi
+	
+	sub_stop() {
+		#usage: $1 = server name
+		
+		PID=`ls -1 $SCREENDIR | grep $1 | cut -d"." -f1`
+		kill $PID &> /dev/null
+		if [ $? == 0 ]; then
+			echo -e $WHITE"stop:"$GREEN" $1 successfully killed."
+			quit 0
+		else
+			echo -e $WHITE"stop:"$RED" error stopping $1."
+			quit 1
+		fi
+	}
+	
+	if server_installed $1; then
+		write_last_server $1
+		if server_running $1; then
+			if $force; then
+				sub_stop $server
+			fi
+			echo "This is unsafe for some servers, continue?"
+			while true; do
+				echo -ne $WHITE"(yes/no) "$DEF
+				read yesno
+				case "$yesno" in
+					yes)
+						sub_stop $server
+					;;
+					no)
+						echo -e $WHITE"stop:"$CYAN" cancelled."
+						quit 0
+					;;
+					*)
+						echo -e $WHITE"input:"$DEF" yes or no"
+				esac
+			done
+		else
+			echo -e $WHITE"stop:"$CYAN" $1 is not running."
+			quit 1
+		fi
+	else 
+		generic_error "stop" $1
+	fi
+}
+
+server_run() {
+	clear
+	echo -e $YELLOW"Welcome to SuperNova!"
+	echo -e $DEF"Type "$WHITE"'exit'"$DEF" to return to normal shell."
+	echo ""
+	
+	while true; do
+		echo -ne $WHITE"control> "$DEF
+		read INPUT
+		case "$INPUT" in
+			exit)
+				echo "kthxbai!"
+				echo ""
+				quit 0
+			;;
+			run)
+				echo "none of that."
+			;;
+			*)
+				$ROOT $INPUT
+		esac
+	done
+}
+
+server_ip() {
+	#usage: $1 = action
+	#		$2 = ip address
+	#		$3 = network device
+	
+	case "$1" in
+		create)
+			if [ $3 ]; then
+				if ip addr list | grep -q $2; then
+					echo -e $WHITE"$1:"$CYAN" address $2 already exists!"
+					quit 1
+				elif ! ip link list | grep -q $3; then
+					echo -e $WHITE"$1:"$CYAN" no device $3!"
+					quit 1
+				else
+					BROADCAST=`ifconfig $3 | grep broadcast | cut -d" " -f16`
+					ETHCOUNT=`ifconfig -a | grep $3 | wc -l`
+					PREFIX=`ip addr list dev $3 | grep inet | grep -v secondary | grep -v inet6 | cut -d"/" -f2 | cut -d" " -f1`
+					echo "Create IP address $2/$PREFIX on $3 with broadcast $BROADCAST as label $3:$ETHCOUNT?"
+					while true; do
+						echo -ne $WHITE"(yes/no) "$DEF
+						read yesno
+						case "$yesno" in
+							yes)
+								sudo ip addr add $2/$PREFIX broadcast $BROADCAST dev $3 label $3:$ETHCOUNT
+								if [ $? == 0 ]; then
+									echo -e $WHITE"$1:"$GREEN" virtual address $2 created."
+									echo ""
+									quit 0
+								else
+									echo -e $WHITE"$1:"$RED" internal error."
+									quit 1
+								fi
+							;;
+							no)
+								echo -e $WHITE"$1:"$CYAN" command cancelled."
+								quit 0
+							;;
+							*)
+								echo -e $WHITE"input:"$DEF" yes or no"
+						esac
+					done
+				fi
+			else
+				echo -e $WHITE"usage:"$DEF" $ROOT ip <address> <dev>"
+				quit 1
+			fi
+		;;
+		delete)
+			if [ $3 ]; then
+				if ! ip addr list | grep -q $2; then
+					echo -e $WHITE"$1:"$CYAN" address $2 doesn't exist!"
+					quit 1
+				elif ! ip link list | grep -q $3; then
+					echo -e $WHITE"$1:"$CYAN" no device $3!"
+					quit 1
+				else
+					PREFIX=`ip addr list | grep $2 | cut -d"/" -f2 | cut -d" " -f1` 
+					echo "Delete virtual address $2/$PREFIX on $3?"
+					while true; do
+						echo -ne $WHITE"(yes/no) "$DEF
+						read yesno
+						case "$yesno" in
+							yes)
+								sudo ip addr del $2/$PREFIX dev $3
+								if [ $? == 0 ]; then
+									if ! ip addr list | grep -q $2; then
+										echo -e $WHITE"$1:"$GREEN" virtual address $2 deleted."
+										echo ""
+										quit 0
+									else
+										echo -e $WHITE"$1:"$RED" internal error."
+										quit 1
+									fi
+								else
+									echo -e $WHITE"$1:"$RED" internal error."
+									quit 1
+								fi
+							;;
+							no)
+								echo -e $WHITE"$1:"$CYAN" command cancelled."
+								quit 0
+							;;
+							*)
+								echo -e $WHITE"input:"$DEF" yes or no"
+						esac
+					done
+				fi
+			else
+				echo -e $WHITE"usage:"$DEF" $ROOT ip $1 <address> <dev>"
+				quit 1
+			fi
+		;;
+		list)
+			if [ $2 ]; then
+				if ip link list | grep -q $2; then
+					ip addr list dev $2 | grep inet | grep -v inet6
+				fi
+			else
+				ip addr list | grep inet | grep -v inet6
+			fi
+		;;
+		*)
+			echo "usage: $ROOT ip {create|delete|list}"
+			echo "             create <address> <dev>"
+			echo "             delete <address> <dev>"
+			echo "             list <dev>"
+			quit 1
+	esac
+}
+
+print_help() {	
+	sub_print_all() {
+		echo $GLOBALUSAGE
+		echo ""
+		echo "		connect <server name>"
+		echo "		create <server name> [<IP address>]"
+		echo "		stop <server name> [force]"
+		echo "		list"
+		echo "		edit <server name> {<file>|list} [path]"
+		echo "		update <server name>"
+		echo "		readme <server name>"
+		echo "		run"
+		echo "		halt"
+		echo "		ip {create|delete|list}"
+		echo "			create <IP address> <net dev>"
+		echo "			delete <IP address> <net dev>"
+		echo "			list"
+		echo "		help"
+		echo "		version"
+	}
+
+	if [ $1 ]; then
+		case "$1" in
+			connect)
+				echo "usage: $ROOT $1 <server name>"
+				echo ""
+				echo "Use this to connect to any currently running servers "
+				echo "as found from using \"$ROOT list\"."
+			;;
+			create)
+				echo "usage: $ROOT $1 <server name> [<IP address>]"
+				echo ""
+				echo "This starts an available server as specified by its "
+				echo "game file. It will create mutliple instances of the "
+				echo "game if the \'MULTI\' tag is set in the edit file. If a "
+				echo "preferred IP address is specified it will attempt to "
+				echo "use it."
+				echo "Find available servers with \"$ROOT list\"."
+			;;
+			stop)
+				echo "usage: $ROOT $1 <server name> [force]"
+				echo ""
+				echo "This sends a kill message to the currently running "
+				echo "server. Be careful, some servers will lose data using "
+				echo "this method. Connect to the server and stop correctly "
+				echo "if neccessary. If \'force\' is specified it will "
+				echo "execute immediately without confirmation."
+			;;
+			list)
+				echo "usage: $ROOT $1"
+				echo ""
+				echo "This lists all servers available and currently running."
+			;;
+			edit)
+				echo "usage: $ROOT $1 <server name> {<file>|list} [path]"
+				echo ""
+				echo "Use this to modify a specified set of files, described "
+				echo "by the server's edit file. Use the \'list\' paramter to "
+				echo "find available files for editing. Using \'path\' will "
+				echo "return a path rather than open an editor."
+			;;
+			update)
+				echo "usage: $ROOT $1 <server name>"
+				echo ""
+				echo "This runs a command specified in the edit file to update "
+				echo "the server software. Use this with caution."
+			;;
+			readme)
+				echo "usage: $ROOT $1 <server name>"
+				echo ""
+				echo "This opens a reader for the servers readme file."
+			;;
+			run)
+				echo "usage: $ROOT $1"
+				echo ""
+				echo "Starts an interface for control."
+			;;
+			halt)
+				echo "usage: $ROOT $1"
+				echo ""
+				echo "Kills every server it finds running. Be aware that it "
+				echo "will kill any screen sessions running under $USER."
+			;;
+			ip)
+				echo "usage: $ROOT $1 {create|delete|list}"
+				echo ""
+				echo "      create <IP address> <net dev>"
+				echo "           This creates an IP address with the "
+				echo "           same netmask/broadcast as the dev\'s "
+				echo "           first IP."
+				echo ""
+				echo "      delete <IP address> <net dev>"
+				echo "           Removes the IP address from that dev."
+				echo ""
+				echo "      list <net dev>"
+				echo "           lists all devs and addresses, or just "
+				echo "           addressed of the specified address."
+				echo ""
+			;;
+			*)
+				sub_print_all
+		esac
+	else
+		sub_print_all
+	fi
+}
+
+# initial consistency checks
+if [ -f $HOME/$VARFILE ]; then
+	. $HOME/$VARFILE
+	
+	if ! $COLOURS; then
+		DEF=""
+		WHITE=""
+		YELLOW=""
+		RED=""
+		CYAN=""
+		GREEN=""
+	fi
+	
+	if ! [ $COLOURS ] || ! [ $LAST_SERVER ] || ! [ $INTERFACE ] || ! [ $EDITOR ] || ! [ $GAMEDIR ] || ! [ $SCRIPTDIR ] || ! [ $IPDIR ]; then
+		echo -e $WHITE"$ROOT:"$RED" $HOME/$VARFILE broken."
+		quit 1
+	fi
+else
+	echo -e $WHITE"$ROOT:"$RED" $HOME/$VARFILE missing."
+	echo -e $DEF" This program isn't installed for "$YELLOW"$USER."
+	quit 1
+fi
+
+# program start
+case "$1" in
+	connect)
+		last_server server_connect $2
+	;;
+	create)
+		last_server server_create $2 $3
+	;;
+	list)
+		server_list
+	;;
+	halt)
+		server_halt
+	;;
+	edit)
+		server_edit $2 $3
+	;;
+	readme)
+		last_server server_readme $2
+	;;
+	update)
+		last_server server_update $2
+	;;
+	stop)
+		last_server server_stop $2
+	;;
+	run)
+		server_run
+	;;
+	ip)
+		server_ip
+	;;
+	help)
+		print_help $2
+	;;
+	version)
+		cat $ROOT | head -n 5 | tail -n 4
+	;;
+	*)
+		echo $GLOBALUSAGE
+		quit 1
+esac
+quit 0

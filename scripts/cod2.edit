@@ -1,0 +1,8 @@
+#!/bin/bash
+# cod2 edit file
+
+COD2=$GAMEDIR/cod2
+PORT=28960
+MULTI=true
+NAMES=(server init)
+FILES=($COD2/main/server.cfg $COD2/init.sh)

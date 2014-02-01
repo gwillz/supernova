@@ -1,0 +1,8 @@
+#!/bin/bash
+# minecraft edit script
+
+ACES=$GAMEDIR/acespades/pysnip
+PORT=32887
+MULTI=false
+NAMES=(config)
+FILES=($ACES/feature_server/config.txt)

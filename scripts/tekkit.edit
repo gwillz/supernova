@@ -1,0 +1,9 @@
+#!/bin/bash
+# minecraft bukkit edit file
+
+TEKKIT=$GAMEDIR/tekkit
+PORT=25565
+MULTI=false
+NAMES=(server bukkit permissions)
+FILES=($TEKKIT/server.properties $TEKKIT/bukkit.yml $TEKKIT/permissions.yml)
+UPDATE="$TEKKIT/update.sh"

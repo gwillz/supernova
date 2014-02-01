@@ -1,0 +1,12 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/garrysmod.edit
+
+cd $GMOD
+#screen -dmS garrysmod-$2 $GMOD/srcds_run -game garrysmod -console +gamemode terrortown +mapcyclefile $GMOD/cstrike/mapcycle.txt +sv_alltalk 0 +sv_scriptenforcer 1 +maxplayers 16 +ip $1 +sv_lan 0 -nomaster +map ttt_town_b1
+screen -dmS garrysmod-$2 $GMOD/srcds_run -game garrysmod -console +sv_alltalk 1 +sv_scriptenforcer 1 +maxplayers 10 +ip $1 +sv_lan 0 +host_workshop_collection 178026096 -authkey 02625AAFEB1CFAEC3C83066350860ADE +gamemode stopitslender +map zs_last_mansion_r +mapcyclefile $GMOD/slendermaps.txt
+
+echo $1 > $IPDIR/garrysmod-$2.ip
+exit 0

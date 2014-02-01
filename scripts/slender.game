@@ -1,0 +1,11 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/slender.edit
+
+cd $GMOD
+screen -dmS slender-$2 $GMOD/srcds_run -game garrysmod -console +sv_alltalk 1 +sv_scriptenforcer 1 +maxplayers 10 +ip $1 +sv_lan 0 +host_workshop_collection 178026096 -authkey 02625AAFEB1CFAEC3C83066350860ADE +gamemode stopitslender +map zs_last_mansion_r +mapcyclefile $GMOD/slender_maps.txt +hostname "SuperNova Stop it Slender!" #+servercfgfile $GMOD/slender_server.cfg 
+
+echo $1 > $IPDIR/slender-$2.ip
+exit 0

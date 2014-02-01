@@ -1,0 +1,15 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/csgo.edit
+
+if [ ! $2 ]; then
+  exit 1
+fi
+
+cd $CSGO
+screen -dmS csgo-$2 $CSGO/srcds_run -game csgo -console -usercon +game_type 1 +game_mode 0 +mapgroup mg_armsrace +map ar_shoots +maxplayers +hostname "SuperNova CS:GO #$2" 20 +ip $1 +hostname "SuperNova CS:GO #$2" +bot_quota 0
+
+echo $1 > $IPDIR/csgo-$2.ip
+exit 0

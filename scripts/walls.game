@@ -1,0 +1,13 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/walls.edit
+
+sedReplace "server-ip.*" "server-ip=$1" "$WALLS/server.properties"
+
+cd $WALLS
+screen -dmS walls java -Xmx2G -Xms1G -jar $WALLS/minecraft_server.jar nogui
+
+echo $1 > $IPDIR/walls.ip
+exit 0

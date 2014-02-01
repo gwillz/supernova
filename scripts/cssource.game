@@ -1,0 +1,15 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/cssource.edit
+
+if [ ! $2 ]; then
+  exit 1
+fi
+
+cd $CSS
+screen -dmS cssource-$2 $CSS/srcds_run -console -game cstrike -nohltv +map de_dust +hostname "SuperNova CS:S #$2" +maxplayers 16 +ip $1 +motdfile_text motd_text.txt +mapcyclefile mapcycle.txt
+
+echo $1 > $IPDIR/cssource-$2.ip
+exit 0

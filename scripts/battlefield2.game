@@ -1,0 +1,11 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/battlefield2.edit
+
+cd $BF2
+screen -dmS battlefield2 $BF2/start.sh
+
+echo $1 > $IPDIR/battlefield2.ip
+exit 0
