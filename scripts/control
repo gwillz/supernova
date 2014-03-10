@@ -1,8 +1,8 @@
 #!/bin/bash
 ##                  Supernova server control
 ##                     By Gwilyn Saunders
-##                          v4.13.83
-##                        Dec 12th 2013
+##                          v4.13.84
+##                        Mar 10th 2014
 ##
 ##
 ## TODO: think of a better program name
@@ -101,7 +101,7 @@ server_connect() {
 			echo -e $WHITE"connect:"$CYAN" $1 server not running."
 			quit 1
 		fi
-	else 
+	else
 		generic_error "connect" $1
 	fi
 }
@@ -130,7 +130,7 @@ server_create() {
 			echo -e $WHITE"create:"$GREEN" $1 server started on $2."$DEF
 			echo -e " Remember to disconnect with Ctrl-A, then D"
 			echo -e " not with Ctrl-C or you'll kill the server!"
-			quit 0 #break loop 
+			quit 0 #break loop
 		else
 			echo -e $WHITE"create:"$CYAN" $1 server failed."
 			quit 1
@@ -164,7 +164,7 @@ server_create() {
 			echo " Create more with \"ip create\""
 			quit 1
 		fi
-	else 
+	else
 		generic_error "create" $1
 	fi
 }
@@ -180,7 +180,7 @@ server_list() {
 		RUNNING=(`ls -1 $SCREENDIR | cut -d"." -f2`)
 		for r in ${RUNNING[@]}; do
 			if [ -a $IPDIR/$r.ip ]; then
-				ip=`cat $IPDIR/$r.ip` 
+				ip=`cat $IPDIR/$r.ip`
 				echo -e "$r: "$GREEN"$ip"$DEF
 			fi
 		done
@@ -250,7 +250,7 @@ server_edit() {
 						sub_edit $SCRIPTDIR/$1.game $3
 					;;
 					edit)
-						sub_edit $SCRIPTDIR/$1.game $3
+						sub_edit $SCRIPTDIR/$1.edit $3
 					;;
 					*)
 						i=0
@@ -289,7 +289,7 @@ server_readme() {
 			echo -e $WHITE"readme:"$CYAN" $1 has no readme file."
 			quit 1
 		fi
-	else 
+	else
 		generic_error "readme" $1
 	fi
 }
@@ -317,7 +317,7 @@ server_update() {
 			echo -e $WHITE"update:"$CYAN" $1 has a server running."
 			quit 1
 		fi
-	else 
+	else
 		generic_error "update" $1
 	fi
 }
@@ -386,7 +386,7 @@ server_stop() {
 			echo -e $WHITE"stop:"$CYAN" $1 is not running."
 			quit 1
 		fi
-	else 
+	else
 		generic_error "stop" $1
 	fi
 }
@@ -472,7 +472,7 @@ server_ip() {
 					echo -e $WHITE"$1:"$CYAN" no device $3!"
 					quit 1
 				else
-					PREFIX=`ip addr list | grep $2 | cut -d"/" -f2 | cut -d" " -f1` 
+					PREFIX=`ip addr list | grep $2 | cut -d"/" -f2 | cut -d" " -f1`
 					echo "Delete virtual address $2/$PREFIX on $3?"
 					while true; do
 						echo -ne $WHITE"(yes/no) "$DEF
@@ -526,7 +526,7 @@ server_ip() {
 	esac
 }
 
-print_help() {	
+print_help() {
 	sub_print_all() {
 		echo $GLOBALUSAGE
 		echo ""
