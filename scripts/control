@@ -1,7 +1,7 @@
 #!/bin/bash
 ##                  Supernova server control
 ##                     By Gwilyn Saunders
-##                          v4.13.84
+##                          v4.14.84
 ##                        Mar 10th 2014
 ##
 ##
@@ -16,7 +16,7 @@ VARFILE=.control
 USER=`whoami`
 HOME=`cat /etc/passwd | grep $USER | cut -d":" -f6`
 ROOT=$0
-GLOBALUSAGE="usage: $ROOT {connect|create|stop|list|edit|update|readme|run|halt|ip|version|help}"
+GLOBALUSAGE="usage: $ROOT {connect|create|stop|list|edit|update|clone|readme|run|halt|ip|version|help}"
 
 # common routines
 editfile_check() {
@@ -275,6 +275,26 @@ server_edit() {
 	else
 		echo -e $WHITE"usage:"$DEF" $ROOT edit <server name>|<global> {<file>|list}"
 		quit 1
+	fi
+}
+
+server_clone() {
+	#usage: $1 = src server name
+	#		$2 = dest server name
+	
+	if server_installed $1; then
+		if ! server_installed $2; then
+			cp $SCRIPTDIR/$1.edit $SCRIPTDIR/$2.edit
+			cp $SCRIPTDIR/$1.game $SCRIPTDIR/$2.game
+			
+			#something with sed
+			
+		else
+			echo -e $WHITE"clone:"$CYAN" can't overwrite existing server $2"
+			quit 1
+		fi
+	else
+		generic_error "clone" $1
 	fi
 }
 
@@ -537,6 +557,7 @@ print_help() {
 		echo "		edit <server name> {<file>|list} [path]"
 		echo "		update <server name>"
 		echo "		readme <server name>"
+		echo "      clone <src server> <dest server>"
 		echo "		run"
 		echo "		halt"
 		echo "		ip {create|delete|list}"
@@ -592,6 +613,12 @@ print_help() {
 				echo ""
 				echo "This runs a command specified in the edit file to update "
 				echo "the server software. Use this with caution."
+			;;
+			clone)
+				echo "usage: $ROOT $1 <src server> <dest server>"
+				echo ""
+				echo "This copies a server profile (.game, .edit) and creates "
+				echo "a new server based from that template."
 			;;
 			readme)
 				echo "usage: $ROOT $1 <server name>"
@@ -672,6 +699,9 @@ case "$1" in
 	;;
 	edit)
 		server_edit $2 $3
+	;;
+	clone)
+		server_clone $2 $3
 	;;
 	readme)
 		last_server server_readme $2

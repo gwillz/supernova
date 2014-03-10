@@ -7,5 +7,5 @@
 cd $GMOD
 screen -dmS murdergm-$2 $GMOD/srcds_run -game garrysmod -console +sv_alltalk 1 +sv_scriptenforcer 1 +maxplayers 16 +ip $1 +sv_lan 0 +host_workshop_collection 178026096 -authkey 02625AAFEB1CFAEC3C83066350860ADE +gamemode murder +map cs_office +mapcyclefile $GMOD/murder_maps.txt +hostname "SuperNova Murder GM!" +servercfgfile $GMOD/murder_server.cfg
 
-echo $1 > $IPDIR/prophunt-$2.ip
+echo $1 > $IPDIR/murdergm-$2.ip
 exit 0
