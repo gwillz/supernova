@@ -5,7 +5,7 @@
 . $SCRIPTDIR/prophunt.edit
 
 cd $GMOD
-screen -dmS prophunt-$2 $GMOD/srcds_run -game garrysmod -console +sv_alltalk 1 +sv_scriptenforcer 1 +maxplayers 16 +ip $1 +sv_lan 0 +host_workshop_collection 178026096 -authkey 02625AAFEB1CFAEC3C83066350860ADE +gamemode prop_hunt +map cs_office +mapcyclefile $GMOD/phunt_maps.txt +hostname "SuperNova Prophunt!" #+servercfgfile $GMOD/phunt_server.cfg
+screen -dmS prophunt-$2 $GMOD/srcds_run -game garrysmod -console +sv_alltalk 1 +sv_scriptenforcer 1 +maxplayers 16 +ip $1 +sv_lan 0 +host_workshop_collection 178026096 -authkey 02625AAFEB1CFAEC3C83066350860ADE +gamemode prop_hunt +map cs_office +mapcyclefile phunt_maps.txt +hostname "SuperNova Prophunt!" +servercfgfile phunt_server.cfg
 
 echo $1 > $IPDIR/prophunt-$2.ip
 exit 0

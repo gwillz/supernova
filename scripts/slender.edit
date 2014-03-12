@@ -5,5 +5,5 @@ GMOD=$GAMEDIR/garrysmod
 PORT=27015
 MULTI=true
 NAMES=(server mapcycle gamemodes mount)
-FILES=($GMOD/slender_server.cfg $GMOD/garrysmod/slender_maps.txt $GMOD/garrysmod/gamemodes_server.txt $GMOD/garrysmod/cfg/mount.cfg)
+FILES=($GMOD/garrysmod/cfg/slender_server.cfg $GMOD/garrysmod/cfg/slender_maps.txt $GMOD/garrysmod/gamemodes_server.txt $GMOD/garrysmod/cfg/mount.cfg)
 UPDATE="$GAMEDIR/steam/update.sh $GAMEDIR/steam/garrysmod.txt"

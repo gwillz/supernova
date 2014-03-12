@@ -5,5 +5,5 @@ GMOD=$GAMEDIR/garrysmod
 PORT=27015
 MULTI=true
 NAMES=(server mapcycle gamemodes mount)
-FILES=($GMOD/ttt_server.cfg $GMOD/ttt_maps.txt $GMOD/garrysmod/gamemodes_server.txt $GMOD/garrysmod/cfg/mount.cfg)
+FILES=($GMOD/garrysmod/cfg/ttt_server.cfg $GMOD/garrysmod/cfg/ttt_maps.txt $GMOD/garrysmod/gamemodes_server.txt $GMOD/garrysmod/cfg/mount.cfg)
 UPDATE="$GAMEDIR/steam/update.sh $GAMEDIR/steam/garrysmod.txt"
