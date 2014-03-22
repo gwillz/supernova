@@ -418,12 +418,16 @@ server_run() {
 	echo ""
 	
 	while true; do
-		echo -ne $WHITE"control> "$DEF
-		read INPUT
+		history -c
+		history -n
+		echo -en $WHITE
+		read -ep "control> " INPUT
+		echo -en $DEF
+		echo "$INPUT" >> $HOME/$HISTFILE
+		
 		case "$INPUT" in
 			exit)
 				echo "kthxbai!"
-				echo ""
 				quit 0
 			;;
 			run)
