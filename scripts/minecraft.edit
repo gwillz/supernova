@@ -4,6 +4,7 @@
 MINECRAFT=$GAMEDIR/minecraft
 PORT=25565
 MULTI=false
+STOP=stop
 NAMES=(server ops bans)
 FILES=($MINECRAFT/server.properties $MINECRAFT/ops.txt $MINECRAFT/banned-players.txt)
 UPDATE="$MINECRAFT/update.sh"

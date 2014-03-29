@@ -4,6 +4,7 @@
 BUKKIT=$GAMEDIR/bukkit
 PORT=25565
 MULTI=false
+STOP=stop
 NAMES=(server bukkit permissions worldguard worledit)
 FILES=($BUKKIT/server.properties $BUKKIT/bukkit.yml $BUKKIT/permissions.yml $BUKKIT/plugins/WorldGuard/config.yml $BUKKIT/plugins/WorldEdit/config.yml)
 UPDATE="$BUKKIT/update.sh"

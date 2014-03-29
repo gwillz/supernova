@@ -4,6 +4,7 @@
 WALLS=$GAMEDIR/walls
 PORT=25565
 MULTI=false
+STOP=stop
 NAMES=(server ops bans)
 FILES=($WALLS/server.properties $WALLS/ops.txt $WALLS/banned-players.txt)
 UPDATE="$WALLS/update.sh"

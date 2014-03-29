@@ -1,8 +1,8 @@
 #!/bin/bash
 ##                  Supernova server control
 ##                     By Gwilyn Saunders
-##                          v4.14.84
-##                        Mar 10th 2014
+##                          v4.15.84
+##                        Mar 29th 2014
 ##
 ##
 ## TODO: think of a better program name
@@ -347,61 +347,89 @@ server_stop() {
 	#		$2 = instance num (optional)
 	#		$3 = 'force'-bool (optional)
 	
-	#determine force tag and server+instance combo
-	if [ $2 ]; then
-		if [ "$2" == "force" ]; then
-			force=true
-			server="$1"
-		else
-			if [ $3 ] && [ "$3" == "force" ]; then
-				force=true
-				server="$1-$2"
-			else
-				force=false
-				server="$1-$2"
-			fi
-		fi
-	else
-		force=false
-		server="$1"
-	fi
+	sub_kill() {
+		#usage: $1 = server name
+		
+		echo "This is unsafe for some servers, continue?"
+		while true; do
+			echo -ne $WHITE"(yes/no) "$DEF
+			read yesno
+			case "$yesno" in
+				yes)
+					PID=`ls -1 $SCREENDIR | grep $1 | cut -d"." -f1`
+					kill $PID &> /dev/null
+					if [ $? == 0 ]; then
+						echo -e $WHITE"stop:"$GREEN" $1 successfully killed."
+						quit 0
+					else
+						echo -e $WHITE"stop:"$RED" error stopping $1."
+						quit 1
+					fi
+				;;
+				no)
+					echo -e $WHITE"stop:"$CYAN" cancelled."
+					quit 0
+				;;
+				*)
+					echo -e $WHITE"input:"$DEF" yes or no"
+			esac
+		done
+	}
 	
 	sub_stop() {
 		#usage: $1 = server name
 		
-		PID=`ls -1 $SCREENDIR | grep $1 | cut -d"." -f1`
-		kill $PID &> /dev/null
-		if [ $? == 0 ]; then
-			echo -e $WHITE"stop:"$GREEN" $1 successfully killed."
-			quit 0
+		. $SCRIPTDIR/$1.edit
+		
+		if [ $STOP ]; then
+			screen -S $1 -p 0 -X poop "$STOP$(printf \\r)"
+			
+			if server_running $1; then
+				echo -e $WHITE"stop:"$GREEN" signal sent to $1."
+				quit 0
+			else
+				echo -e $WHITE"stop:"$RED" error stopping $1."
+				quit 1
+			fi
 		else
-			echo -e $WHITE"stop:"$RED" error stopping $1."
-			quit 1
+			sub_kill $1
 		fi
 	}
+	
+	#determine force tag and server+instance combo
+	server="$1"
+	
+	if [ $2 ]; then
+		case "$2" in
+			force)
+				force=false
+			;;
+			*)
+				server="$1-$2"
+				if [ $3 ]; then
+					case "$2" in
+						force)
+							force=true
+						;;
+						*)
+							force=false
+					esac
+				else
+					force=false
+				fi
+		esac
+	else
+		force=false
+	fi
 	
 	if server_installed $1; then
 		write_last_server $1
 		if server_running $1; then
 			if $force; then
+				sub_kill $server
+			else
 				sub_stop $server
 			fi
-			echo "This is unsafe for some servers, continue?"
-			while true; do
-				echo -ne $WHITE"(yes/no) "$DEF
-				read yesno
-				case "$yesno" in
-					yes)
-						sub_stop $server
-					;;
-					no)
-						echo -e $WHITE"stop:"$CYAN" cancelled."
-						quit 0
-					;;
-					*)
-						echo -e $WHITE"input:"$DEF" yes or no"
-				esac
-			done
 		else
 			echo -e $WHITE"stop:"$CYAN" $1 is not running."
 			quit 1
@@ -593,11 +621,11 @@ print_help() {
 			stop)
 				echo "usage: $ROOT $1 <server name> [force]"
 				echo ""
-				echo "This sends a kill message to the currently running "
-				echo "server. Be careful, some servers will lose data using "
-				echo "this method. Connect to the server and stop correctly "
-				echo "if neccessary. If \'force\' is specified it will "
-				echo "execute immediately without confirmation."
+				echo "This sends a stop message to the currently running "
+				echo "server. Be aware that some servers take longer than "
+				echo "others to shut down, so it may report a failed stop. "
+				echo "If \'force\' is specified it will kill the server "
+				echo "instead of using it's specified stop command."
 			;;
 			list)
 				echo "usage: $ROOT $1"

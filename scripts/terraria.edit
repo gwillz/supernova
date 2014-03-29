@@ -4,5 +4,6 @@
 TERRARIA=$GAMEDIR/terraria
 PORT=7777
 MULTI=false
+STOP=exit
 NAMES=(server init)
 FILES=($TERRARIA/server.properties $TERRARIA/init.sh)

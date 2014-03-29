@@ -4,6 +4,7 @@
 HUNGERGAMES=$GAMEDIR/hungergames
 PORT=25565
 MULTI=false
+STOP=stop
 NAMES=(server ops bans)
 FILES=($HUNGERGAMES/server.properties $HUNGERGAMES/ops.txt $HUNGERGAMES/banned-players.txt)
 UPDATE="$HUNGERGAMES/update.sh"

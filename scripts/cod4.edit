@@ -1,7 +1,7 @@
 #!/bin/bash
 # cod4 edit file
 
-COD4=$GAMEDIR/cod4 
+COD4=$GAMEDIR/cod4
 PORT=28960
 MULTI=true
 NAMES=(server)
