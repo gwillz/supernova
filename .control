@@ -1,11 +1,11 @@
 ## game variables file
 
 ## Runtime vars
-LAST_SERVER=cod4
+LAST_SERVER=calamity
 INTERFACE=enp2s2f1
 SCREENDIR="/run/screens/S-$USER"
 COLOURS=true
-HISTFILE=.control_history
+HISTFILE=$HOME/.control_history
 
 ## Common vars
 EDITOR=nano
