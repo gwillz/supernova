@@ -1,8 +1,8 @@
 #!/bin/bash
 ##                  Supernova server control
 ##                     By Gwilyn Saunders
-##                          v4.15.84
-##                        Mar 29th 2014
+##                          v4.15.85
+##                        May 23th 2014
 ##
 ##
 ## TODO: think of a better program name
@@ -243,7 +243,7 @@ server_edit() {
 			if [ $2 ]; then
 				case "$2" in
 					list)
-						echo -e $WHITE"edit:"$DEF" $1 edit {${NAMES[@]}}"
+						echo -e $WHITE"edit:"$DEF" $1 edit {game edit ${NAMES[@]}}"
 						quit 0
 					;;
 					game)
@@ -265,7 +265,7 @@ server_edit() {
 						quit 1
 				esac
 			else
-				echo -e $WHITE"edit:"$DEF" $1 edit {${NAMES[@]}}"
+				echo -e $WHITE"edit:"$DEF" $1 edit {game edit ${NAMES[@]}}"
 				quit 0 #same as 'edit list'
 			fi
 		else
