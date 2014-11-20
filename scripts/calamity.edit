@@ -7,4 +7,4 @@ MULTI=false
 STOP=stop
 NAMES=(server ops bans)
 FILES=($CALAMITY/server.properties $CALAMITY/ops.txt $CALAMITY/banned-players.txt)
-UPDATE="$CALAMITY/update.sh"
+UPDATE="$CALAMITY/reset.sh"

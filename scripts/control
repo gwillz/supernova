@@ -1,14 +1,15 @@
 #!/bin/bash
 ##                  Supernova server control
 ##                     By Gwilyn Saunders
-##                          v4.15.85
-##                        May 23th 2014
+##                          v4.15.87
+##                     November 20th 2014
 ##
 ##
 ## TODO: think of a better program name
 ## TODO: create something that generates a new server
 ## TODO: create bash doco/strip tool
 ## TODO: modify all actions to comply with stop's multi-instance technique
+## TODO: server_ip is broken
 
 
 # common variables
@@ -288,7 +289,10 @@ server_clone() {
 			cp $SCRIPTDIR/$1.game $SCRIPTDIR/$2.game
 			
 			#something with sed
+			#TODO
 			
+			echo -e $WHITE"clone:"$GREEN" success."
+			quit 0
 		else
 			echo -e $WHITE"clone:"$CYAN" can't overwrite existing server $2"
 			quit 1
@@ -451,7 +455,7 @@ server_run() {
 		echo -en $WHITE
 		read -ep "control> " INPUT
 		echo -en $DEF
-		echo "$INPUT" >> $HOME/$HISTFILE
+		echo "$INPUT" >> $HISTFILE
 		
 		case "$INPUT" in
 			exit)
@@ -720,10 +724,16 @@ case "$1" in
 	connect)
 		last_server server_connect $2
 	;;
+	start)
+		last_server server_connect $2
+	;;
 	create)
 		last_server server_create $2 $3
 	;;
 	list)
+		server_list
+	;;
+	ls)
 		server_list
 	;;
 	halt)

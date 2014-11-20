@@ -8,7 +8,7 @@ if [ ! $2 ]; then
   exit 1
 fi
 
-screen -dmS tf2-$2 $TF2/srcds_run -console -game tf -nohltv +map cp_dustbowl +ip $1 +sv_lan 1 +hostname "Supernova TF2 #$2" +maxplayers 32 +motdfile motd.txt +mapcyclefile mapcycle.txt +sv_tags "cp,increased_maxplayers,supernova"
+screen -dmS tf2-$2 $TF2/srcds_run -console -game tf -nohltv +map pl_badwater +ip $1 +sv_lan 1 +hostname "Supernova TF2 #$2" +maxplayers 32 +mapcyclefile mapcycle.txt +sv_tags "cp,increased_maxplayers,supernova"
 
 echo $1 > $IPDIR/tf2-$2.ip
 exit 0

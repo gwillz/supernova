@@ -9,7 +9,17 @@ if [ ! $2 ]; then
 fi
 
 cd $CSGO
-screen -dmS csgo-$2 $CSGO/srcds_run -game csgo -console -usercon +game_type 1 +game_mode 0 +mapgroup mg_armsrace +map ar_shoots +maxplayers +hostname "SuperNova CS:GO #$2" 20 +ip $1 +hostname "SuperNova CS:GO #$2" +bot_quota 0
+#Armsrace
+#screen -dmS csgo-$2 $CSGO/srcds_run -game csgo -console -usercon +game_type 1 +game_mode 0 +mapgroup mg_armsrace +map ar_shoots +maxplayers 20 +ip $1 +hostname "SuperNova CS:GO Armsrace #$2" +bot_quota 0
+
+#Competitve
+#screen -dmS csgo-$2 $CSGO/srcds_run -game csgo -console -usercon +game_type 0 +game_mode 1 +mapgroup mg_bomb +map de_inferno +maxplayers 10 +ip $1 +hostname "SuperNova CS:GO Competitive #$2" +bot_quota 0
+
+#Training
+screen -dmS csgo-$2 $CSGO/srcds_run -game csgo -console -usercon +game_type 2 +game_mode 0 +map de_inferno +maxplayers_override 20 +ip $1 +hostname "SuperNova CS:GO Training #$2" +bot_quota 0 +sv_cheats 1
+
+#Deathmatch
+#screen -dmS csgo-$2 $CSGO/srcds_run -game csgo -console -usercon +game_type 1 +game_mode 2 +map de_inferno +maxplayers_override 20 +ip $1 +hostname "SuperNova CS:GO Deathmatch #$2" +bot_quota 0 +sv_cheats 1
 
 echo $1 > $IPDIR/csgo-$2.ip
 exit 0

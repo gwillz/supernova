@@ -1,0 +1,16 @@
+#!/bin/bash
+# game init file
+
+. $HOME/.control
+. $SCRIPTDIR/insurgency.edit
+
+if [ ! $2 ]; then
+  exit 1
+fi
+
+cd $INSURGENCY
+screen -dmS insurgency-$2 $INSURGENCY/srcds_linux -console hostname "SuperNova INSURGENCY #$2" +maxplayers 32 +ip $1
+# +motdfile_text motd_text.txt +mapcyclefile mapcycle.txt
+
+echo $1 > $IPDIR/insurgency-$2.ip
+exit 0

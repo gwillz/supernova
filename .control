@@ -1,7 +1,7 @@
 ## game variables file
 
 ## Runtime vars
-LAST_SERVER=calamity
+LAST_SERVER=forge
 INTERFACE=enp2s2f1
 SCREENDIR="/run/screens/S-$USER"
 COLOURS=true

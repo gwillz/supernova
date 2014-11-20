@@ -4,6 +4,6 @@
 CSGO=$GAMEDIR/csgo
 PORT=27015
 MULTI=true
-NAMES=(server mapcycle gamemodes)
-FILES=($CSGO/csgo/cfg/server.cfg $CSGO/csgo/mapcycle.txt $CSGO/csgo/gamemodes_server.txt)
+NAMES=(server mapcycle gamemodes training)
+FILES=($CSGO/csgo/cfg/server.cfg $CSGO/csgo/mapcycle.txt $CSGO/csgo/gamemodes_server.txt $CSGO/csgo/cfg/server_training.cfg)
 UPDATE="$GAMEDIR/steam/update.sh $GAMEDIR/steam/csgo.txt"

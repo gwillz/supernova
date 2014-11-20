@@ -1,0 +1,10 @@
+#!/bin/bash
+# forge edit script
+
+FORGE=$GAMEDIR/forge
+PORT=25565
+MULTI=false
+STOP=stop
+NAMES=(server ops bans)
+FILES=($FORGE/server.properties $FORGE/ops.txt $FORGE/banned-players.txt)
+#UPDATE="$FORGE/update.sh"

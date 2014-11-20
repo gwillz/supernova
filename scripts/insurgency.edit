@@ -1,0 +1,9 @@
+#!/bin/bash
+# insurgency edit script
+
+INSURGENCY=$GAMEDIR/insurgency
+PORT=27015
+MULTI=true
+NAMES=(server mapcycle)
+FILES=($INSURGENCY/insurgency/cfg/server.cfg $INSURGENCY/insurgency/mapcycle.txt)
+UPDATE="$GAMEDIR/steam/update.sh $GAMEDIR/steam/insurgency.txt"
