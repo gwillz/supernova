@@ -1,7 +1,7 @@
 #!/bin/bash
 ##                  Supernova server control
 ##                     By Gwilyn Saunders
-##                          v4.15.87
+##                          v4.15.90
 ##                     November 20th 2014
 ##
 ##
@@ -10,16 +10,23 @@
 ## TODO: create bash doco/strip tool
 ## TODO: modify all actions to comply with stop's multi-instance technique
 ## TODO: server_ip is broken
+## TODO: replace cut -f -d commands with awk printf
 
 
 # common variables
-VARFILE=.control
 USER=`whoami`
+PUSER=`who am i | awk '{printf $1}'`
 HOME=`cat /etc/passwd | grep $USER | cut -d":" -f6`
 ROOT=$0
 GLOBALUSAGE="usage: $ROOT {connect|create|stop|list|edit|update|clone|readme|run|halt|ip|version|help}"
+VARFILE=.control
 
 # common routines
+legit_user() {
+	[ $USER == $PUSER ]
+	return $?
+}
+
 editfile_check() {
 	#usage: $1 = file path
 	. $SCRIPTDIR/$1.edit
@@ -99,7 +106,7 @@ server_connect() {
 		write_last_server $1
 		screen -x $1 &> /dev/null
 		if [ $? != 0 ]; then
-			echo -e $WHITE"connect:"$CYAN" $1 server not running."
+			echo -e $WHITE"connect:"$RED" $1 error connecting to server session."
 			quit 1
 		fi
 	else
@@ -292,7 +299,6 @@ server_clone() {
 			#TODO
 			
 			echo -e $WHITE"clone:"$GREEN" success."
-			quit 0
 		else
 			echo -e $WHITE"clone:"$CYAN" can't overwrite existing server $2"
 			quit 1
@@ -719,13 +725,18 @@ else
 	quit 1
 fi
 
+if ! legit_user; then
+	echo -e $WHITE"$ROOT:"$RED" cannot execute within sudo/su."
+	quit 1
+fi
+
 # program start
 case "$1" in
 	connect)
 		last_server server_connect $2
 	;;
 	start)
-		last_server server_connect $2
+		last_server server_create $2 $3
 	;;
 	create)
 		last_server server_create $2 $3

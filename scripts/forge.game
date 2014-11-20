@@ -7,7 +7,7 @@
 sedReplace "server-ip.*" "server-ip=$1" "$FORGE/server.properties"
 
 cd $FORGE
-screen -dmS forge java -Xmx2G -Xms1G -jar $FORGE/minecraft_server.1.7.10.jar nogui
+screen -dmS forge java -Xmx2G -Xms1G -jar $FORGE/forge*universal.jar nogui
 
 echo $1 > $IPDIR/forge.ip
 exit 0
